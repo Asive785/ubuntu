@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}UEH Hub{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{% url 'home' %}">Home</a>
+            {% if user.is_authenticated %}
+                {% if user.is_client %}
+                    <a href="{% url 'request_list' %}">My requests</a>
+                    <a href="{% url 'opportunity_list' %}">Opportunities</a>
+                    <a href="{% url 'my_applications' %}">My applications</a>
+                {% elif user.is_agent %}
+                    <a href="{% url 'request_list' %}">Requests</a>
+                {% elif user.is_ueh_admin %}
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="{% url 'request_list' %}">Requests</a>
+                    <a href="{% url 'opportunity_list' %}">Opportunities</a>
+                {% endif %}
+                <form method="post" action="{% url 'logout' %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit">Log out ({{ user.username }})</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Log in</a>
+                <a href="{% url 'register' %}">Register</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">{{ message }}</div>
+S            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Ubuntu Enterprise Hub</p>
+    </footer>
+</body>
+</html>
